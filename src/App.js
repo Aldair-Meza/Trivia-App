@@ -1,24 +1,67 @@
-import logo from './logo.svg';
 import './App.css';
+import Header from "./components/Header";
+import {BrowserRouter, Route,  Routes} from 'react-router-dom'
+import Home from './Pages/Home';
+import Trivia from './Pages/Trivia';
+//import Respuestas from './components/Preguntas';
+import { useState } from 'react';
+import axios from 'axios';
+
 
 function App() {
+
+  
+  const [name, setName] = useState()
+  const [preguntas, setPreguntas] = useState()
+  const [ganancia, setGanancia] = useState(0)
+
+  const fetchpreguntas = async(categoria= '', dificultad='') => {
+
+    const {data} = await axios.get(
+      `https://opentdb.com/api.php?amount=10${
+        categoria && `&category=${categoria}`
+      }${dificultad && `&difficulty=${dificultad}`}&type=multiple`
+      )
+
+    setPreguntas(data.results)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    
+  <>
+  <BrowserRouter>
+    
+    <div className="app" style={{backgroundImage:'url(./test.jpg)'}}>
+
+    
+    
+     <Header />
+
+     <Routes>
+    
+        <Route path='/' exact element={<Home 
+        name={name}
+        setName={setName}
+        fetchpreguntas={fetchpreguntas}
+        />} />
+         
+        <Route path='/trivia' exact element={
+        <Trivia 
+        name={name}
+        preguntas={preguntas}
+        ganancia={ganancia}
+        setGanancia={setGanancia}
+        setPreguntas={setPreguntas}
+        />} />      
+        
+        
+       
+     </Routes>
+    
     </div>
+  </BrowserRouter>
+  </>
+   
   );
 }
 
